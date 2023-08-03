@@ -1,0 +1,27 @@
+ssh 포트 바꾸기
+sudo vi /etc/ssh/sshd_config
+Port 22 -> Port [원하는 포트]
+sudo systemctl restart sshd
+로컬에서 바뀐 ssh 포트로 접속시 다음의 옵션 추가
+-p [바꾼 포트번호] a
+ssh 터널링
+창을 2개 띄워서 사용한다
+1)로컬임의의 포트 -> 베스천
+2)로컬임의의 포트 -> 원하는 Pirvate 리소스 
+1)ssh -i [Bastion접속 암호키] -L [로컬포트]:[private리소스 IP or Domain]:[접속할 private리소스 포트] [유저명]@[베스천IP]
+ex)ssh -i bastion.pem -L 33330:10.0.1.38:22 ec2-user@54.180.70.0
+
+2)ssh -i [private리소스접속 암호키] [접속유저명]@localhost -p [위에서설정한 로컬포트]
+ex) ssh -i private.pem ec2-user@localhost -p 33330
+ssh 세션 유지
+서버쪽에서
+sudo vi /etc/ssh/sshd_config
+...
+ClientAliveInterval 60
+ClientAliveCountMax 3
+...
+수정 후 다음 명령어
+sudo systemctl restart sshd
+서버에서 클라이언트에 60초마다 최대 3번의 dummy신호를 보내 타임 아웃이 발생 하지 않도록함
+용량별로 리눅스 내리차순 정렬
+du -sh ./* | sort -rh
